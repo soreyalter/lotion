@@ -8,7 +8,7 @@ body,
   height: 100%;
 }
 
-:root {
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -30,7 +30,7 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-}
+} */
 
 @layer base {
   :root {
