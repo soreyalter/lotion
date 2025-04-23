@@ -1,6 +1,6 @@
 'use client'
 
-import { useScrollTop } from '@/hooks/use-scroll-top'
+import { useScrollTop } from '@/hooks/useScrollTop'
 import { cn } from '@/lib/utils'
 import { Logo } from './logo'
 import { ModeToggle } from '@/components/mode-toggle'
@@ -18,7 +18,7 @@ const Navbar = () => {
   return (
     <div
       className={cn(
-        'z-50 bg-background dark:bg-[#1f1f1f] fixed top-0 flex items-center w-full p-6',
+        'z-50 bg-background dark:bg-[#1f1f1f] fixed top-0 flex items-center w-screen p-6',
         scrolled && 'border-b shadow-sm',
       )}
     >
@@ -44,8 +44,8 @@ const Navbar = () => {
         )}
         {/* 加载完毕，已登录 */}
         {!isLoading && isAuthenticated && (
-          <>
-            <Button variant={"ghost"} size={"sm"}>
+          <div className='flex items-center'>
+            <Button variant={"ghost"} size={"sm"} asChild>
               <Link href="/documents">
                 Enter Lotion
               </Link>
@@ -53,9 +53,9 @@ const Navbar = () => {
             {/* afterSignOutUrl 参数已经废弃并成为 Clerk 的全局配置参数
                 在 ClerkProvider 上配置这个参数或者在 await Clerk.load() 中配置 */}
             <UserButton />
-          </>
+          </div>
         )}
-        <ModeToggle></ModeToggle>
+        <ModeToggle />
       </div>
     </div>
   )

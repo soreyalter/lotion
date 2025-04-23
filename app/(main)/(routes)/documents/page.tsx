@@ -2,7 +2,7 @@ import React from 'react'
 
 const DocumentsPage = () => {
   return (
-    <div>DocumentsPage</div>
+    <div>DocumentsPage.tsx</div>
   )
 }
 
