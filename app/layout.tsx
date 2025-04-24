@@ -1,19 +1,23 @@
 import type { Metadata } from 'next'
-import localFont from 'next/font/local'
+// import localFont from 'next/font/local'
+import { Inter } from 'next/font/google'
+import { Toaster } from 'sonner'
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { ConvexClientProvider } from '@/components/providers/convex-provider'
 
-const geistSans = localFont({
-  src: './fonts/GeistVF.woff',
-  variable: '--font-geist-sans',
-  weight: '100 900',
-})
-const geistMono = localFont({
-  src: './fonts/GeistMonoVF.woff',
-  variable: '--font-geist-mono',
-  weight: '100 900',
-})
+// const geistSans = localFont({
+//   src: './fonts/GeistVF.woff',
+//   variable: '--font-geist-sans',
+//   weight: '100 900',
+// })
+// const geistMono = localFont({
+//   src: './fonts/GeistMonoVF.woff',
+//   variable: '--font-geist-mono',
+//   weight: '100 900',
+// })
+
+const inter = Inter({ subsets: ['latin'] })
 
 // mata 元数据
 export const metadata: Metadata = {
@@ -47,9 +51,8 @@ export default function RootLayout({
   return (
     // suppressHydrationWarning 抑制 ssr 和客户端渲染不一致的警告
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      {/* <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}> */}
+      <body className={inter.className}>
         {/* 提供convex后端服务和clerk身份验证 */}
         <ConvexClientProvider>
           {/* shacn-ui 主题切换 */}
@@ -59,8 +62,9 @@ export default function RootLayout({
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
-            storageKey='jotion-theme-2'
+            storageKey="jotion-theme-2"
           >
+            <Toaster position="bottom-center" />
             {children}
           </ThemeProvider>
         </ConvexClientProvider>

@@ -1,8 +1,13 @@
+'use client'
+
 import { cn } from '@/lib/utils'
 import { ChevronsLeft, MenuIcon } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import React, { ElementRef, useEffect, useRef, useState } from 'react'
 import { useMediaQuery } from 'usehooks-ts'
+import UserItem from './UserItem'
+import { useQuery } from 'convex/react'
+import { api } from '@/convex/_generated/api'
 
 const Navigation = () => {
   const pathname = usePathname()
@@ -12,6 +17,7 @@ const Navigation = () => {
   const navbarRef = useRef<ElementRef<'div'>>(null)
   const [isResetting, setIsResetting] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const documents = useQuery(api.documents.get)
 
   // 应对从网页端缩小到移动端时的情况
   useEffect(() => {
@@ -83,7 +89,7 @@ const Navigation = () => {
       // navbarRef.current.style.setProperty('left', '0')
       navbarRef.current.style.width = '100%'
       navbarRef.current.style.left = '0'
-      
+
       setTimeout(() => setIsResetting(false), 300)
     }
   }
@@ -103,18 +109,27 @@ const Navigation = () => {
           role="button"
           onClick={collapse}
           className={cn(
-            'absolute right-2 top-3 h-6 w-6 rounded-sm text-muted-foreground opacity-0 transition hover:bg-neutral-300 group-hover/sidebar:opacity-100 dark:hover:bg-neutral-600',
+            'absolute right-2 top-2 h-6 w-6 rounded-sm text-muted-foreground opacity-0 transition hover:bg-neutral-300 group-hover/sidebar:opacity-100 dark:hover:bg-neutral-600',
             isMobile && 'opacity-100',
           )}
         >
           <ChevronsLeft className="h-6 w-6" />
         </div>
+
+        {/* 顶部用户头像栏 */}
         <div>
-          <p>Action items</p>
+          <UserItem />
         </div>
+
+        {/* 文档列表 */}
         <div className="mt-4">
-          <p>Documents</p>
+          {documents?.map(document => (
+            <p key={document._id}>
+              {document.title}
+            </p>
+          ))}
         </div>
+
         {/* 纵向分隔符 */}
         <div
           onMouseDown={handleMouseDown}
