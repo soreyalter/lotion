@@ -1,13 +1,16 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { ChevronsLeft, MenuIcon } from 'lucide-react'
+import { ChevronsLeft, MenuIcon, PlusCircle, Search, Settings } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import React, { ElementRef, useEffect, useRef, useState } from 'react'
 import { useMediaQuery } from 'usehooks-ts'
 import UserItem from './UserItem'
-import { useQuery } from 'convex/react'
+import { useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
+import Item from './Item'
+import { toast } from 'sonner'
+import DocumentList from './DocumentList'
 
 const Navigation = () => {
   const pathname = usePathname()
@@ -17,7 +20,7 @@ const Navigation = () => {
   const navbarRef = useRef<ElementRef<'div'>>(null)
   const [isResetting, setIsResetting] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const documents = useQuery(api.documents.get)
+  const create = useMutation(api.documents.create)
 
   // 应对从网页端缩小到移动端时的情况
   useEffect(() => {
@@ -94,6 +97,16 @@ const Navigation = () => {
     }
   }
 
+  const handleCreate = () => {
+    const promise = create({ title: 'Untitle' })
+
+    toast.promise(promise, {
+      loading: 'Creating a new note...',
+      success: 'New Note created successfully!',
+      error: 'Failed to create a new note.',
+    })
+  }
+
   return (
     <>
       {/* tailwindcss 可以定义一个组group/sidebar，组名为sidebar */}
@@ -116,18 +129,17 @@ const Navigation = () => {
           <ChevronsLeft className="h-6 w-6" />
         </div>
 
-        {/* 顶部用户头像栏 */}
+        {/* 顶部用户头像栏以及 action Item */}
         <div>
           <UserItem />
+          <Item icon={Search} label="Search" isSearch />
+          <Item icon={Settings} label="Settings" />
+          <Item icon={PlusCircle} label="New Page" onClick={handleCreate} />
         </div>
 
         {/* 文档列表 */}
         <div className="mt-4">
-          {documents?.map(document => (
-            <p key={document._id}>
-              {document.title}
-            </p>
-          ))}
+          <DocumentList />
         </div>
 
         {/* 纵向分隔符 */}
