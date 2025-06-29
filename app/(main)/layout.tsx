@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 
 import React from 'react'
 import Navigation from './_components/Navigation'
+import { SearchCommand } from '@/components/SearchCommand'
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   // 通过convex api 获取用户认证信息，实现鉴权
@@ -13,7 +14,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   if (isLoading) {
     // 加载中
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="flex h-full items-center justify-center">
         <Spinner size={'lg'}></Spinner>
       </div>
     )
@@ -23,9 +24,12 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     return redirect('/')
   }
   return (
-    <div className="h-full flex dark:bg-[1f1f1f]">
+    <div className="flex h-full dark:bg-[1f1f1f]">
       <Navigation />
-      <main className='flex-1 h-full overflow-y-auto'>{children}</main>
+      <main className="h-full flex-1 overflow-y-auto">
+        <SearchCommand />
+        {children}
+      </main>
     </div>
   )
 }

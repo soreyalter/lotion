@@ -17,10 +17,13 @@ const TrashBox = () => {
   const remove = useMutation(api.documents.remove)
 
   const [search, setSearch] = useState<string>('')
+
+  // 依据输入的关键词 过滤 查找对应的文档
   const filteredDocumtns = documents?.filter((document) =>
     document.title.toLowerCase().includes(search.toLowerCase()),
   )
 
+  /** 点击查看对应文档的内容 */
   const onClick = (documentId: string) => {
     router.push(`/documents/${documentId}`)
   }
@@ -63,6 +66,7 @@ const TrashBox = () => {
         <Search className="h-4 w-4" />
         <Input
           value={search}
+          // TODO：或许这里可以做一下防抖
           onChange={(e) => setSearch(e.target.value)}
           className="h-7 bg-secondary px-2 focus-visible:ring-transparent"
           placeholder="Filter by page title..."

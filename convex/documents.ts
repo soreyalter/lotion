@@ -4,10 +4,10 @@ import { mutation, query } from './_generated/server'
 import { Doc, Id } from './_generated/dataModel'
 
 export const archive = mutation({
-  args: {id: v.id('documents')},
+  args: { id: v.id('documents') },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
-    
+
     if (!identity) {
       throw new Error('Not anthenticated')
     }
@@ -24,30 +24,34 @@ export const archive = mutation({
     }
 
     // 递归地将所有子文档都归档
-    const recursiveArchive = async (documentId: Id<"documents">) => {
+    const recursiveArchive = async (documentId: Id<'documents'>) => {
+
+      // 查询传入 document id 文档的孩子文档
       const children = await ctx.db
-        .query("documents")
-        .withIndex("by_user_parent", (q) =>
-          q.eq("userId", userId).eq("parentDocument", documentId)
+        .query('documents')
+        // withIndex 使用自定义的二级索引来查询，这里是 by_user_parent
+        .withIndex('by_user_parent', (q) =>
+          q.eq('userId', userId).eq('parentDocument', documentId),
         )
-        .collect();
+        .collect()
 
       for (const child of children) {
         await ctx.db.patch(child._id, {
           isArchived: true,
-        });
-        await recursiveArchive(child._id);
+        })
+        await recursiveArchive(child._id)
       }
-    };
+    }
 
     const document = await ctx.db.patch(args.id, {
       isArchived: true,
-    });
-    await recursiveArchive(args.id);
-    return document;
-  }
+    })
+    await recursiveArchive(args.id)
+    return document
+  },
 })
 
+/** 查找未归档的文档列表 */
 export const getSidebar = query({
   args: {
     parentDocument: v.optional(v.id('documents')),
@@ -68,7 +72,7 @@ export const getSidebar = query({
       .filter((q) => q.eq(q.field('isArchived'), false))
       .order('desc')
       .collect()
-      
+
     return documents
   },
 })
@@ -111,115 +115,118 @@ export const create = mutation({
   },
 })
 
-/** 查询回收站文档（archived documents） */
+/** 查询回收站（已归档）文档（archived documents） */
 export const getTrash = query({
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
+    const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
-      throw new Error("Not authenticated");
+      throw new Error('Not authenticated')
     }
-    const userId = identity.subject;
+    const userId = identity.subject
 
     const documents = await ctx.db
-      .query("documents")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter((q) => q.eq(q.field("isArchived"), true))
-      .order("desc")
-      .collect();
+      .query('documents')
+      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .filter((q) => q.eq(q.field('isArchived'), true))
+      .order('desc')
+      .collect()
 
-    return documents;
+    return documents
   },
-});
+})
 
+/** 将已归档的 document 及其孩子恢复 */
 export const restore = mutation({
   args: {
-    id: v.id("documents"),
+    id: v.id('documents'),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
+    const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
-      throw new Error("Not authenticated");
+      throw new Error('Not authenticated')
     }
-    const userId = identity.subject;
+    const userId = identity.subject
 
-    const existingDocument = await ctx.db.get(args.id);
+    const existingDocument = await ctx.db.get(args.id)
     if (!existingDocument) {
-      throw new Error("Not found");
+      throw new Error('Not found')
     }
     if (existingDocument.userId !== userId) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized')
     }
 
-    const recursiveRestore = async (documentId: Id<"documents">) => {
+    const recursiveRestore = async (documentId: Id<'documents'>) => {
       const children = await ctx.db
-        .query("documents")
-        .withIndex("by_user_parent", (q) =>
-          q.eq("userId", userId).eq("parentDocument", documentId)
+        .query('documents')
+        .withIndex('by_user_parent', (q) =>
+          q.eq('userId', userId).eq('parentDocument', documentId),
         )
-        .collect();
+        .collect()
 
       for (const child of children) {
         await ctx.db.patch(child._id, {
           isArchived: false,
-        });
-        await recursiveRestore(child._id);
-      }
-    };
-
-    const options: Partial<Doc<"documents">> = {
-      isArchived: false,
-    };
-
-    if (existingDocument.parentDocument) {
-      const parent = await ctx.db.get(existingDocument.parentDocument);
-      if (parent?.isArchived) {
-        options.parentDocument = undefined;
+        })
+        await recursiveRestore(child._id)
       }
     }
 
-    const document = await ctx.db.patch(args.id, options);
-    await recursiveRestore(args.id);
-    return document;
+    // ts 类型体操 Partial 表示将传入的泛型类型转为可选
+    const options: Partial<Doc<'documents'>> = {
+      isArchived: false,
+    }
+
+    if (existingDocument.parentDocument) {
+      const parent = await ctx.db.get(existingDocument.parentDocument)
+      if (parent?.isArchived) {
+        options.parentDocument = undefined
+      }
+    }
+
+    const document = await ctx.db.patch(args.id, options)
+    await recursiveRestore(args.id)
+    return document
   },
-});
+})
 
 export const remove = mutation({
   args: {
-    id: v.id("documents"),
+    id: v.id('documents'),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
+    const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
-      throw new Error("Not authenticated");
+      throw new Error('Not authenticated')
     }
-    const userId = identity.subject;
+    const userId = identity.subject
 
-    const existingDocument = await ctx.db.get(args.id);
+    const existingDocument = await ctx.db.get(args.id)
     if (!existingDocument) {
-      throw new Error("Not found");
+      throw new Error('Not found')
     }
     if (existingDocument.userId !== userId) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized')
     }
 
-    const document = await ctx.db.delete(args.id);
-    return document;
+    const document = await ctx.db.delete(args.id)
+    return document
   },
-});
+})
 
+/** 查找未归档的文档 */
 export const getSearch = query({
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
+    const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
-      throw new Error("Not authenticated");
+      throw new Error('Not authenticated')
     }
-    const userId = identity.subject;
+    const userId = identity.subject
     const documents = await ctx.db
-      .query("documents")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter((q) => q.eq(q.field("isArchived"), false))
-      .order("desc")
-      .collect();
-    return documents;
+      .query('documents')
+      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .filter((q) => q.eq(q.field('isArchived'), false))
+      .order('desc')
+      .collect()
+    return documents
   },
-});
+})

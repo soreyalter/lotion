@@ -1,7 +1,15 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { ChevronsLeft, MenuIcon, Plus, PlusCircle, Search, Settings, Trash } from 'lucide-react'
+import {
+  ChevronsLeft,
+  MenuIcon,
+  Plus,
+  PlusCircle,
+  Search,
+  Settings,
+  Trash,
+} from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import React, { ElementRef, useEffect, useRef, useState } from 'react'
 import { useMediaQuery } from 'usehooks-ts'
@@ -11,8 +19,14 @@ import { api } from '@/convex/_generated/api'
 import Item from './Item'
 import { toast } from 'sonner'
 import DocumentList from './DocumentList'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import TrashBox from './TrashBox'
+import { useSearchStore } from '@/hooks/useSearch'
+import { useSettingsStore } from '@/hooks/useSetttings'
 
 /** documents 页的左侧侧边栏 */
 const Navigation = () => {
@@ -24,6 +38,8 @@ const Navigation = () => {
   const [isResetting, setIsResetting] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const create = useMutation(api.documents.create)
+  const searchStore = useSearchStore()
+  const settingsStore = useSettingsStore()
 
   // 应对从网页端缩小到移动端时的情况
   useEffect(() => {
@@ -135,20 +151,32 @@ const Navigation = () => {
         {/* 顶部用户头像栏以及 action Item */}
         <div>
           <UserItem />
-          <Item icon={Search} label="Search" isSearch />
-          <Item icon={Settings} label="Settings" />
+          <Item
+            icon={Search}
+            label="Search"
+            isSearch
+            onClick={searchStore.onOpen}
+          />
+          <Item
+            icon={Settings}
+            label="Settings"
+            onClick={settingsStore.onOpen}
+          />
           <Item icon={PlusCircle} label="New Page" onClick={handleCreate} />
         </div>
 
         {/* 文档列表 */}
         <div className="mt-4">
           <DocumentList />
-          <Item onClick={handleCreate} label='Add a page' icon={Plus} />
+          <Item onClick={handleCreate} label="Add a page" icon={Plus} />
           <Popover>
-            <PopoverTrigger className='w-full mt-4'>
-              <Item label='Trash' icon={Trash} />
+            <PopoverTrigger className="mt-4 w-full">
+              <Item label="Trash" icon={Trash} />
             </PopoverTrigger>
-            <PopoverContent className='p-0 w-72' side={isMobile ? 'bottom' : 'right'}>
+            <PopoverContent
+              className="w-72 p-0"
+              side={isMobile ? 'bottom' : 'right'}
+            >
               <TrashBox />
             </PopoverContent>
           </Popover>

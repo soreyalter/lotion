@@ -5,6 +5,7 @@ import { Toaster } from 'sonner'
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { ConvexClientProvider } from '@/components/providers/convex-provider'
+import { ModalProvider } from '@/components/providers/ModalProvider'
 
 // const geistSans = localFont({
 //   src: './fonts/GeistVF.woff',
@@ -64,6 +65,7 @@ export default function RootLayout({
             disableTransitionOnChange
             storageKey="jotion-theme-2"
           >
+            <ModalProvider />
             <Toaster position="bottom-center" />
             {children}
           </ThemeProvider>
