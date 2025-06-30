@@ -9,6 +9,7 @@ import Image from 'next/image'
 import React from 'react'
 import { toast } from 'sonner'
 
+/** 主体文档内容页面 */
 const DocumentsPage = () => {
   const { user } = useUser()
   const create = useMutation(api.documents.create)

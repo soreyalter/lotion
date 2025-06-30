@@ -15,6 +15,7 @@ interface DocumentListProps {
   level?: number
 }
 
+/** 侧边栏文档列表 */
 const DocumentList = ({
   level = 0,
   parentDocumentId,
@@ -54,6 +55,7 @@ const DocumentList = ({
     )
   }
 
+  // 非顶层
   return (
     <>
       {/* 只在非顶层 展开 没有子文档 展示这段提示 */}

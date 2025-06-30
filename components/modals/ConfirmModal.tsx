@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react'
 import {
   AlertDialog,
@@ -16,6 +18,7 @@ interface ConfirmModalProps {
   onConfirm: () => void
 }
 
+/** 确认弹窗 */
 const ConfirmModal = ({ children, onConfirm }: ConfirmModalProps) => {
   const handleConfirm = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -34,12 +37,10 @@ const ConfirmModal = ({ children, onConfirm }: ConfirmModalProps) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={e => e.stopPropagation()}>
+          <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
             Cancel
           </AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm}>
-            Confirm
-          </AlertDialogAction>
+          <AlertDialogAction onClick={handleConfirm}>Confirm</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
