@@ -3,7 +3,7 @@
 import { useSettingsStore } from '@/hooks/useSetttings'
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { ModeToggle } from '../mode-toggle'
+import { ModeToggle } from '../ModeToggle'
 
 export const SettingsModal = () => {
   const { settingsOpen, onClose } = useSettingsStore()
