@@ -4,6 +4,7 @@ import { useQuery } from 'convex/react'
 import { MenuIcon } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import React from 'react'
+import Title from './Title'
 
 interface DocumentsNavbarProps {
   isCollapsed: boolean
@@ -18,10 +19,13 @@ const DocumentsNavbar = ({
   const document = useQuery(api.documents.getById, {
     documentId: params.documentId as Id<'documents'>,
   })
-  console.log(document)
 
   if (document === undefined) {
-    return <div>Loading...</div>
+    return (
+      <nav className="flex w-full items-center bg-background px-3 py-2 dark:bg-[#1f1f1f]">
+        <Title.Skeleton />
+      </nav>
+    )
   }
 
   if (document === null) {
@@ -38,7 +42,9 @@ const DocumentsNavbar = ({
             className="h-6 w-6 text-muted-foreground"
           />
         )}
-        <div className="flex w-full items-center justify-between">Navbar</div>
+        <div className="flex w-full items-center justify-between">
+          <Title initData={document} />
+        </div>
       </nav>
     </>
   )
