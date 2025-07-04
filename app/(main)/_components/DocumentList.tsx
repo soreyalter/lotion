@@ -3,8 +3,7 @@
 import { api } from '@/convex/_generated/api'
 import { Id } from '@/convex/_generated/dataModel'
 import { useQuery } from 'convex/react'
-import { useParams } from 'next/navigation'
-import { useRouter } from 'next/router'
+import { useParams, useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import Item from './Item'
 import { cn } from '@/lib/utils'
@@ -21,7 +20,7 @@ const DocumentList = ({
   parentDocumentId,
 }: DocumentListProps) => {
   const params = useParams()
-  // const router = useRouter()
+  const router = useRouter()
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
 
   const onExpand = (documentId: string) => {
@@ -37,7 +36,7 @@ const DocumentList = ({
   })
 
   const onRedirect = (documentId: string) => {
-    // router.push(`/documents/${documentId}`)
+    router.push(`/documents/${documentId}`)
   }
 
   // 顶层

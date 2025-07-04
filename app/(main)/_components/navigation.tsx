@@ -10,7 +10,7 @@ import {
   Settings,
   Trash,
 } from 'lucide-react'
-import { usePathname } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 import React, { ElementRef, useEffect, useRef, useState } from 'react'
 import { useMediaQuery } from 'usehooks-ts'
 import UserItem from './UserItem'
@@ -27,6 +27,7 @@ import {
 import TrashBox from './TrashBox'
 import { useSearchStore } from '@/hooks/useSearch'
 import { useSettingsStore } from '@/hooks/useSetttings'
+import DocumentsNavbar from './DocumentsNavbar'
 
 /** documents 页的左侧侧边栏 */
 const Navigation = () => {
@@ -40,6 +41,7 @@ const Navigation = () => {
   const create = useMutation(api.documents.create)
   const searchStore = useSearchStore()
   const settingsStore = useSettingsStore()
+  const params = useParams()
 
   // 应对从网页端缩小到移动端时的情况
   useEffect(() => {
@@ -189,6 +191,8 @@ const Navigation = () => {
           className="absolute right-0 top-0 h-full w-1 cursor-ew-resize bg-primary/10 opacity-0 transition group-hover/sidebar:opacity-100"
         />
       </aside>
+
+      {/* 文档页上方的 nav，折叠时只展示一个图标 */}
       <div
         ref={navbarRef}
         className={cn(
@@ -197,15 +201,19 @@ const Navigation = () => {
           isMobile && 'left-0 w-full',
         )}
       >
-        <nav className="w-full bg-transparent px-3 py-2">
-          {isCollapsed && (
-            <MenuIcon
-              role="button"
-              onClick={resetWidth}
-              className="h-6 w-6 text-muted-foreground"
-            />
-          )}
-        </nav>
+        {!!params.documentId ? (
+          <DocumentsNavbar isCollapsed={isCollapsed} onResetWidth={resetWidth} />
+        ) : (
+          <nav className="w-full bg-transparent px-3 py-2">
+            {isCollapsed && (
+              <MenuIcon
+                role="button"
+                onClick={resetWidth}
+                className="h-6 w-6 text-muted-foreground"
+              />
+            )}
+          </nav>
+        )}
       </div>
     </>
   )
