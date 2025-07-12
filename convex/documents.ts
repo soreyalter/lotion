@@ -3,6 +3,14 @@ import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
 import { Doc, Id } from './_generated/dataModel'
 
+export class NotFoundError extends Error {
+  constructor (message: string) {
+    super(message)
+    this.name = 'NotFoundError'
+    Object.setPrototypeOf(this, NotFoundError.prototype)
+  }
+}
+
 export const archive = mutation({
   args: { id: v.id('documents') },
   handler: async (ctx, args) => {
@@ -103,7 +111,7 @@ export const create = mutation({
     }
     const userId = identity.subject
 
-    const document = await ctx.db.insert('documents', {
+    const documentId = await ctx.db.insert('documents', {
       title: args.title,
       parentDocument: args.parentDocument,
       userId,
@@ -111,7 +119,7 @@ export const create = mutation({
       isPublished: false,
     })
 
-    return document
+    return documentId
   },
 })
 
@@ -238,7 +246,8 @@ export const getById = query({
     const identity = await ctx.auth.getUserIdentity()
     const document = await ctx.db.get(args.documentId)
     if (!document) {
-      throw new Error("Not Found")
+      // 返回 null 而不是抛出错误，配合 delete 操作，防止其路由跳转失败报错
+      return null
     }
 
     if (document.isPublished && !document.isArchived) {

@@ -1,3 +1,5 @@
+'use client'
+
 import { Doc } from '@/convex/_generated/dataModel'
 import React, { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -17,7 +19,7 @@ interface TitleProps {
 }
 
 const Title = ({ initData }: TitleProps) => {
-  const [inputData, setInputData] = useState(initData.title || "Untitled")
+  const [inputData, setInputData] = useState(initData.title || 'Untitled')
   const inputRef = useRef<HTMLInputElement>(null)
   const [open, setOpen] = useState(false)
 
@@ -42,20 +44,32 @@ const Title = ({ initData }: TitleProps) => {
     })
   }
 
+  const handleInteractOutside = () => {
+    setOpen(false)
+    if (inputData === '') {
+      setInputData(() => inputData || 'Untitled')
+    }
+  }
+
   return (
     <div className="flex items-center gap-x-1">
       {!!initData.icon && <p>{initData.icon}</p>}
 
       <Popover onOpenChange={handlerOpenChange} open={open}>
-        <PopoverTrigger>
-          <Button className='truncate' variant={'ghost'} size={'sm'} onClick={() => setOpen(true)}>
+        <PopoverTrigger asChild>
+          <Button
+            className="truncate"
+            variant={'ghost'}
+            size={'sm'}
+            onClick={() => setOpen(true)}
+          >
             {inputData}
           </Button>
         </PopoverTrigger>
         <PopoverContent
           align="start"
           className="px-2 py-1"
-          onInteractOutside={() => setOpen(false)}
+          onInteractOutside={handleInteractOutside}
         >
           <div
             onClick={(event) => {
@@ -80,7 +94,7 @@ const Title = ({ initData }: TitleProps) => {
 }
 
 Title.Skeleton = function TitleSkeleton() {
-  return <Skeleton className='rounded-md h-9 w-30' />
+  return <Skeleton className="w-32 h-9 rounded-md" />
 }
 
 export default Title
